@@ -1,0 +1,18 @@
+{
+	"extension": {
+		"version": "0.3.0",
+		"json": 1
+	},
+	"project": {
+		"name": "MazeSolver_Python_V01",
+		"description": "This is the first version of the maze solver using Python. Python was chosen due to its list/dictionary functions to track decision nodes. This allows the robot to prevent itself from getting stuck in a loop.",
+		"creationDate": "2/20/2023, 4:03:26 AM",
+		"platform": "V5",
+		"language": "python",
+		"slot": 1,
+		"sdkVersion": "V5_1_0_1_14",
+		"python": {
+			"main": "src/main.py"
+		}
+	}
+}
