@@ -29,15 +29,16 @@
 from vex import *
 
 # Global Varables
-global a,i,vehicleWidth,startingPoint,scanAreaOutput,scanSensorValue,currentPosition,desiredNode,positionNodes
+global a,i,vehicleWidth,startingPoint,scanAreaOutput,scanSensorValue,currentPosition,desiredNode,positionNodes,holeFinderInput, dictA, dictB, dictXa, dictYa, dictXb, dictYb
 
 vehicleWidth = 100 #Units in milimeters
 startingPoint =[0,0]
 
 def scanArea(a): #return list of distances from scanning point given a selected angle range to scan
-        i = 0
+        
         
         scanAreaOutput = []
+        i = 0
         # Scan a given range and add the variables to an array twenty times
         for i-1 in range(19){
             # Turning and scanning
@@ -59,8 +60,16 @@ def scanArea(a): #return list of distances from scanning point given a selected 
         # Return the completed array
         return scanAreaOutput
 
-def holeFinder():
+def holeFinder(holeFinderInput): #Input array of dictionary inputs
+      i = 0
       # Take all scanned points
+      for i in holeFinderInput.length():
+        dictA=holeFinderInput[i]  
+        dictB=holeFinderInput[i-1]
+        dictXa= dictA["xCoordinate"] #scannedPoint["xCoordinate"]
+        dictYa= dictA["yCoordinate"] #scannedPoint["yCoordinate"]
+        dictXb= dictB["xCoordinate"] #scannedPoint["xCoordinate"]
+        dictYb= dictB["yCoordinate"] #scannedPoint["yCoordinate"]
       # Create virtual walls between each point. This doesn't neccisarily mean that a wall actually exists there, the robot will assume it is. 
       # The lines must be built consecutively or else this won't make sense. Walls must be created from point 0 to 1, 1 to 2, 2 to 3, ect.
       # If a point on a wall is too long between two points, output the angles between those two points for rescan.
@@ -69,6 +78,8 @@ def holeFinder():
 def nodeCreator():
       # Somehow find an ideal spot for a node to be
       # Mark its coordinates relative to the origin
+      # If the node is in the same region as another node, do not create a new node.
+      # If you can avoid adding another item to the array, do so. 
 
 def driveToNode(desiredNode):
       # Take Current Position
