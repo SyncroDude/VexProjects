@@ -24,6 +24,7 @@
         # If a wall and another scanned point has a gap between eachother at their closest point, and it's wide enough for a robot to fit, then it's a hole that can be driven through.
     # In Progress | Create ideal node that the robot can drive to, and assumes that a possible path to an exit is present. Output the coordinates of this node relative to the starting point.
     # In Progress | Return to Node of given variable 
+    # In Progress | How does the robot know which two points it can take to calcuate 
 
 # Possible Optimization
     # Instead of collecting a ton of points via scanning and then calculating if a wall is present, try to calculate if the points are on the same axis, and plot a line for the wall. This can save space and possibly increase performance. 
@@ -42,7 +43,7 @@ from vex import *
 import math 
 
 # Global Varables
-global a, i, brain, front_distance, vehicleWidth, startingPoint, scanAreaOutput, scanSensorValue, currentPosition, desiredNode, positionNodes, holeFinderInput, dictA, dictB, dictXa, dictYa, dictXb, dictYb, wallLength, wallLengthLarger, coordinateSet
+global a, i, brain, front_distance, vehicleWidth, startingPoint, scanAreaOutput, scanSensorValue, currentPosition, desiredNode, positionNodes, holeFinderInput, dictA, dictB, dictXa, dictYa, dictXb, dictYb, wallLength, wallLengthLarger, coordinateSet, caniFitInput
 
 # Hardwear Config
 # This is where you can find all the ports and sensors connected to the robot. Clarify here where each part is connected
@@ -86,7 +87,6 @@ def scanArea(a): #return list of distances from scanning point given a selected 
         # Return the completed array
         return scanAreaOutput
 
-
 def holeTester(holeFinderInput): #Input array of dictionary inputs
       i = 0
       wallLength = 0 
@@ -108,11 +108,10 @@ def holeTester(holeFinderInput): #Input array of dictionary inputs
                 coordinateSet = [1,dictXa,dictYa,dictXb,dictYb]
                 wallLengthLarger.append(coordinateSet)
         else: 
-            # If hole finder does not find a hole, return none
+            # If hole finder does not find a possible hole, return none
             wallLengthLarger.append(None)
       return wallLengthLarger
       
-
 def nodeCreator():
      i = 0
     # Make triangles from the origin to build walls
@@ -128,16 +127,20 @@ def driveToNode(desiredNode):
       # Plan out a path to each node
       # Drive the path until the robot has reached its destination
 
-def caniFits():
+def caniFit(caniFitInput):
      # Will check to see if the robot can fit within a gap. Check out important notes below
     i = 0 
     #IMPORTANT NOTES
     # Use triangle function found here: https://www.desmos.com/calculator/r60rgtoaid to look for a hole between a barrier and a wall. If you find the shortest point between the barrier and the wall, you've found the width of the hole
     # Test for two points to be colinear if there's no barrier between two points
     # If you have two holes near you, position yourself directly between them to navigate to them easily. 
-    
+
     # What if there are curves present in the path? Think of a chicane for example, or a hairpin turn. Can the program calculate a path successfully aka without hitting the inside wall (or the Apex) of the corner?
     
+    if ():
+
+
+
 def when_started1():
 # Brain should be defined by default
     positionNodes = [] #creates a list for collecting position nodes.
