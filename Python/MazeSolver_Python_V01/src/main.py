@@ -20,7 +20,7 @@
     # Complete | Basic Scan Function
     # This has not been accounted for, as you need to input a starting and end angle, so this answer is not complete. Fix this issue and the function will be complete (for now) | High Resolution scan (could combine with the last one, possibly make the function scan between two given angles)
     # Completed | Basic hole in the wall testing. If the distance between two points is wide enough for a robot to fit, output the coordinates to rescan in between. Make sure to run this function after each scan.
-    # Not started. Note, find a way to identify the locations of these "holes" | Create wall structure to calculate more difficult holes. If two walls are colinear but have a gap between them to fit a robot, then it's a hole that can be driven through. 
+    # In Progress | Note, find a way to identify the locations of these "holes" - DONE | Create wall structure to calculate more difficult holes. If two walls are colinear but have a gap between them to fit a robot, then it's a hole that can be driven through. 
         # If a wall and another scanned point has a gap between eachother at their closest point, and it's wide enough for a robot to fit, then it's a hole that can be driven through.
     # In Progress | Create ideal node that the robot can drive to, and assumes that a possible path to an exit is present. Output the coordinates of this node relative to the starting point.
     # In Progress | Return to Node of given variable 
@@ -42,7 +42,7 @@ from vex import *
 import math 
 
 # Global Varables. NOTE: ORGANIZE VARIABLES BETWEEN INT AND FLOAT. Interpreted values from sensors can be int, but calculated values should be float.
-global a, i, brain, front_distance, vehicleWidth, startingPoint, scanAreaOutput, scanSensorValue, currentPosition, desiredNode, positionNodes, holeFinderInput, dictA, dictB, dictXa, dictYa, dictXb, dictYb, wallLength, wallLengthLarger, coordinateSet, fitCoords, fitCheck, fitArray, fitXa, fitYa, fitXb, fitYb,
+global a, i, brain, front_distance, vehicleWidth, startingPoint, scanAreaOutput, scanSensorValue, currentPosition, desiredNode, positionNodes, holeFinderInput, dictA, dictB, dictXa, dictYa, dictXb, dictYb, wallLength, wallLengthLarger, coordinateSet, fitCoords, fitCheck, fitArray, fitXa, fitYa, fitXb, fitYb
 
 # Hardwear Config
 # This is where you can find all the ports and sensors connected to the robot. Clarify here where each part is connected
@@ -93,22 +93,26 @@ def holeTester(holeFinderInput): #Input array of dictionary inputs
       coordinateSet = []
       # Take all scanned points
       for i in holeFinderInput.length():
-        dictA=holeFinderInput[i];  
-        dictB=holeFinderInput[i-1]
-        dictXa= dictA["xCoordinate"]; #scannedPoint["xCoordinate"]
-        dictYa= dictA["yCoordinate"]; #scannedPoint["yCoordinate"]
-        dictXb= dictB["xCoordinate"]; #scannedPoint["xCoordinate"]
-        dictYb= dictB["yCoordinate"]; #scannedPoint["yCoordinate"]
-        # Draw walls for each set of coordinates. This doesn't neccisarily mean that a wall actually exists there, the robot will assume it is. 
-        wallLength = (dictXb-dictXa)/(dictYb-dictYa)
-        # Take the walls and measure the distance of said wall. If the wall is long enough, add it to an array to rescan. 
-        if (wallLength > (vehicleWidth + 100 ) ):
-                  # If a point on a wall is too long between two points, output the angles between those two points for rescan.
-                coordinateSet = [1,dictXa,dictYa,dictXb,dictYb]
-                wallLengthLarger.append(coordinateSet)
-        else: 
-            # If hole finder does not find a hole, return none
-            wallLengthLarger.append(None)
+        a_i = 0
+        for a_i in holeFinderInput.length():
+            dictA=holeFinderInput[i];  
+            dictB=holeFinderInput[a_i]
+            dictXa= dictA["xCoordinate"]; #scannedPoint["xCoordinate"]
+            dictYa= dictA["yCoordinate"]; #scannedPoint["yCoordinate"] 
+            dictXb= dictB["xCoordinate"]; #scannedPoint["xCoordinate"]
+            dictYb= dictB["yCoordinate"]; #scannedPoint["yCoordinate"]
+            # Draw walls for each set of coordinates. This doesn't neccisarily mean that a wall actually exists there, the robot will assume it is. 
+            wallLength = (dictXb-dictXa)/(dictYb-dictYa)
+            # Take the walls and measure the distance of said wall. If the wall is long enough, add it to an array to rescan. 
+            if (wallLength > (vehicleWidth + 100 ) ):
+                    # If a point on a wall is too long between two points, output the angles between those two points for rescan.
+                    coordinateSet = [1,dictXa,dictYa,dictXb,dictYb]
+                    wallLengthLarger.append(coordinateSet)
+            else: 
+                # If hole finder does not find a hole, return none
+                wallLengthLarger.append(None)
+            a_i += 1 
+        i =+ 1
       
       return wallLengthLarger
       
@@ -130,55 +134,67 @@ def driveToNode(desiredNode):
 def caniFits(fitCoords, mapCoords):
      # Will check to see if the robot can fit within a gap. Check out important notes below
      # Make sure these values are floating point, that's super important
+     # Returns an array of boolean values
     i = 0
+    canItFit = []
 
     for i in fitCoords.length():
         if fitCoords(i)!=None:
              fitArray = fitCoords(i)
              if fitArray(0)==1: # After this if statement, determine what system must be used to find holes (Triangle method or Square method)
-                  fitXa = fitArray(1)
-                  fitYa = fitArray(2)
-                  fitXb = fitArray(3)
-                  fitYb = fitArray(4)
-                  m = (fitYa-fitYb)/(fitXa-fitXb)
-                  tanAngle = math.atan(1/m)
-                  midPointX = ((fitXa-fitXb)/2)+fitXb
-                  midPointY = ((fitYa-fitYb)/2)+fitYb
-                  heightAx = vehicleWidth*math.cos(tanAngle)+midPointX
-                  heightAy = -vehicleWidth*math.sin(tanAngle)+midPointY
-                  heightBx = -vehicleWidth*math.cos(tanAngle)+midPointX
-                  heightBy = vehicleWidth*math.sin(tanAngle)+midPointY
+                fitXa = fitArray(1)
+                fitYa = fitArray(2)
+                fitXb = fitArray(3)
+                fitYb = fitArray(4)
+                m = (fitYa-fitYb)/(fitXa-fitXb)
+                tanAngle = math.atan(1/m)
+                midPointX = ((fitXa-fitXb)/2)+fitXb
+                midPointY = ((fitYa-fitYb)/2)+fitYb
+                heightAx = vehicleWidth*math.cos(tanAngle)+midPointX
+                heightAy = -vehicleWidth*math.sin(tanAngle)+midPointY
+                heightBx = -vehicleWidth*math.cos(tanAngle)+midPointX
+                heightBy = vehicleWidth*math.sin(tanAngle)+midPointY
 
-                  if (abs(tanAngle)==90 or tanAngle==0):
-                       # As of right now, no clue how to handle this edge case. This is a crappy way to handle it. 
-                       tanAngle += 1
-                  bA = -((-1/m) * midPointX) + midPointY
-                  bB = -((m) * heightAx) + heightAy
-                  bC = -((m) * heightBx) + heightBy
-                  bD = -((-1/m) * fitXa) + fitYa
-                  bE = -((-1/m) * fitXb) + fitYb
-                  if(bA > 0 and bC > 0): # bA and bC is positive
-                       # functions 27 & 28 on the graphs
-                       if (): # if point is found within bounding area, return false
-                            
-
-                       elif(bA < 0 and bC < 0): # bA and bC is negative
-                       # functions 29 & 30 on the graph
-                        if(): # if point is found within bounding area, return false
-                             
-                       
-
-
-                       elif(bA < 0 and bC > 0): # bA is negative and bC is positive
-                       # functions 31 & 32 on the graph
-                        if(): # if point is found within bounding area, return false
-                             
-
-                       elif(bA > 0 and bC < 0): # bA is positive and bC is negative   
-                       # functions 33 & 34 on the graph
-                        if(): # if point is found within bounding area, return false
-
-
+                if (abs(tanAngle)==90 or tanAngle==0):
+                    # As of right now, no clue how to handle this edge case. This is a crappy way to handle it. 
+                    tanAngle += 1
+                bA = -((-1/m) * midPointX) + midPointY
+                bB = -((m) * heightAx) + heightAy
+                bC = -((m) * heightBx) + heightBy
+                bD = -((-1/m) * fitXa) + fitYa
+                bE = -((-1/m) * fitXb) + fitYb
+                a_i = 0
+                if(): # if box method is true, run function below (How can I test for this, do I need to?)
+                    for a_i in mapCoords.length():
+                        itemDict = mapCoords(i)
+                        itemCoordsX = itemDict("xCoordinate")
+                        itemCoordsY = itemDict("yCoordinate")
+                        if(bA > 0 and bC > 0): # bA and bC is positive
+                        # functions 27 & 28 on the graphs
+                            if (itemCoordsY<=m*itemCoordsX+bC and itemCoordsY>=m*itemCoordsX+bB and itemCoordsY>=(-1/m)*itemCoordsX+bE and itemCoordsY<=(-1/m)*itemCoordsX+bD): # if point is found within bounding area, return false
+                                fitAtMidpoint = [False, midPointX, midPointY]
+                                canItFit.append(fitAtMidpoint)
+                            elif(bA < 0 and bC < 0): # bA and bC is negative
+                        # functions 29 & 30 on the graph
+                                if (itemCoordsY<=m*itemCoordsX+bB and itemCoordsY>=m*itemCoordsX+bC and itemCoordsY<=(-1/m)*itemCoordsX+bE and itemCoordsY>=(-1/m)*itemCoordsX+bD): # if point is found within bounding area, return false
+                                    fitAtMidpoint = [False, midPointX, midPointY]
+                                    canItFit.append(fitAtMidpoint)
+                            elif(bA < 0 and bC > 0): # bA is negative and bC is positive
+                        # functions 31 & 32 on the graph
+                                if (itemCoordsY>=m*itemCoordsX+bB and itemCoordsY<=m*itemCoordsX+bC and itemCoordsY<=(-1/m)*itemCoordsX+bE and itemCoordsY>=(-1/m)*itemCoordsX+bD): # if point is found within bounding area, return false
+                                    fitAtMidpoint = [False, midPointX, midPointY]
+                                    canItFit.append(fitAtMidpoint)
+                            elif(bA > 0 and bC < 0): # bA is positive and bC is negative   
+                        # functions 33 & 34 on the graph
+                                if (itemCoordsY>=m*itemCoordsX+bC and itemCoordsY<=m*itemCoordsX+bB and itemCoordsY<=(-1/m)*itemCoordsX+bE and itemCoordsY>=(-1/m)*itemCoordsX+bD): # if point is found within bounding area, return false
+                                    fitAtMidpoint = [False, midPointX, midPointY]
+                                    canItFit.append(fitAtMidpoint)
+                            else: # if no conditions are met, meaning that there were no points present in the bounding area, return true
+                                fitAtMidpoint = [True, midPointX, midPointY]
+                                canItFit.append(fitAtMidpoint)
+                    a_i =+ 1
+                #else: #triangle function, is this needed?
+    return canItFit
 
 
 
@@ -186,7 +202,7 @@ def caniFits(fitCoords, mapCoords):
     # Use triangle function found here: https://www.desmos.com/calculator/r60rgtoaid to look for a hole between a barrier and a wall. If you find the shortest point between the barrier and the wall, you've found the width of the hole
     # Test for two points to be colinear if there's no barrier between two points
     # Use these formulas to calculate if there's any obstructions between two points. https://www.desmos.com/calculator/qkmmkabvl7
-    # Don't forget to account for if tangent is 90 and -90, as that could cause an error 
+    # Don't forget to account for if tangent is 90, -90 and 0, as that could cause an error 
     # If you have two holes near you, position yourself directly between them to navigate to them easily. 
     
     # What if there are curves present in the path? Think of a chicane for example, or a hairpin turn. Can the program calculate a path successfully aka without hitting the inside wall (or the Apex) of the corner?
