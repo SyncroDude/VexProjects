@@ -1,0 +1,18 @@
+{
+	"extension": {
+		"version": "0.3.0",
+		"json": 1
+	},
+	"project": {
+		"name": "MazeSolver_Python_V02",
+		"description": "This is the second itereation of the maze solver robot. This will account for the ultrasonic sensor's limitations. It will also take into account the limitations of maze that the robot will be tested on, instead of accounting for every possible edge case or loose definition of what qualifies as a maze.",
+		"creationDate": "3/2/2023, 12:51:13 PM",
+		"platform": "V5",
+		"language": "python",
+		"slot": 1,
+		"sdkVersion": "V5_1_0_1_14",
+		"python": {
+			"main": "src/main.py"
+		}
+	}
+}

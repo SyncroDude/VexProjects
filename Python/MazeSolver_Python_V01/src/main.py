@@ -23,7 +23,8 @@
     # In Progress | Note, find a way to identify the locations of these "holes" - DONE | Create wall structure to calculate more difficult holes. If two walls are colinear but have a gap between them to fit a robot, then it's a hole that can be driven through. 
         # If a wall and another scanned point has a gap between eachother at their closest point, and it's wide enough for a robot to fit, then it's a hole that can be driven through.
     # In Progress | Create ideal node that the robot can drive to, and assumes that a possible path to an exit is present. Output the coordinates of this node relative to the starting point.
-    # In Progress | Return to Node of given variable 
+    # In Progress | Return to Node of given variable
+    # In Progress | At distances larger than 200mm, the ultrasonic sensor becomes unreliable. This could lead to bad data, so only plot datapoints that are reliable.
 
 # Possible Optimization
     # Instead of collecting a ton of points via scanning and then calculating if a wall is present, try to calculate if the points are on the same axis, and plot a line for the wall. This can save space and possibly increase performance. 
@@ -72,12 +73,22 @@ def scanArea(a): #return list of distances from scanning point given a selected 
             scanSensorValue = front_distance.distance(vex.DistanceUnits.MM)
             # Create a dictionary to assign values for easy access. Just clarify what value you want from stating the string (text) associated with each variable
             # Each coorinate is based off off the origin, instead of being relative to the robot
-            scannedPoint = {
+            if(scanSensorValue > 200):
+                scannedPoint = {
                 "angle": i*(a/20),
                 "distance": scanSensorValue,
                 "xCoordinate": (((scanSensorValue+150) * math.cos(i*(a/20)) + currentPosition[0])/ 180.0 * math.pi),
                 "yCoordinate": (((scanSensorValue+150) * math.sin(i*(a/20)) + currentPosition[1])/ 180.0 * math.pi),
-            }
+                "reliable": False,
+                }
+            else:   
+                scannedPoint = {
+                    "angle": i*(a/20),
+                    "distance": scanSensorValue,
+                    "xCoordinate": (((scanSensorValue+150) * math.cos(i*(a/20)) + currentPosition[0])/ 180.0 * math.pi),
+                    "yCoordinate": (((scanSensorValue+150) * math.sin(i*(a/20)) + currentPosition[1])/ 180.0 * math.pi),
+                    "reliable": True,
+                }
             # Add the dictionary item to an array for output
             scanAreaOutput.append(scannedPoint)
             # Add to variable until condition is met
