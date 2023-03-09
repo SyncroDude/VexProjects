@@ -21,6 +21,7 @@ right_drive_smart = Motor(Ports.PORT10, GearSetting.RATIO_18_1, True)
 drivetrain_inertial = Inertial(Ports.PORT5)
 drivetrain = SmartDrive(left_drive_smart, right_drive_smart, drivetrain_inertial, 319.19, 320, 40, MM, 1)
 range_finder_a = Sonar(brain.three_wire_port.a)
+motor_8 = Motor(Ports.PORT8, GearSetting.RATIO_18_1, True)
 
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
@@ -46,7 +47,7 @@ def midpointDetectAndDrive():
     brain.screen.print("Collecting Data for midpoint scan")
     brain.screen.next_row() 
     initialHeading = drivetrain.heading(DEGREES)
-    distanceThreshold = 150
+    distanceThreshold = 195
     pointA  = 1
     pointB = 1
     angleA  = 1
@@ -57,7 +58,7 @@ def midpointDetectAndDrive():
     while (drivetrain.turn_for(RIGHT, 90)):
         pointA = range_finder_a.distance(MM)
         angleA = drivetrain.heading(DEGREES)
-        if (pointA >= distanceThreshold): 
+        if (pointA >= distanceThreshold < 350): 
             brain.screen.print("A Wall has been Detected!")
             brain.screen.next_row() 
             break
@@ -68,7 +69,7 @@ def midpointDetectAndDrive():
     while (drivetrain.turn_for(LEFT, 90)):
         pointB = range_finder_a.distance(MM)
         angleB = drivetrain.heading(DEGREES)
-        if (pointB >= distanceThreshold): 
+        if (pointB >= distanceThreshold < 350): 
             brain.screen.print("A Wall has been Detected!")
             brain.screen.next_row() 
             break
@@ -95,14 +96,14 @@ def when_started1():
     global sensingDistance, drivingDistance, totalTravel, TravelLength
     drivingDistance = 0
     totalTravel = [] # For the totalTravel array, 0 means driving, 1 means turning (negative value represents turning left, while a positive value representss turing right), 2 means decision point
-    
+    motor_8.spin_for(REVERSE, 10, DEGREES)
     while (True == True):
       sensingDistance = range_finder_a.distance(MM)
       brain.screen.print(sensingDistance)
       brain.screen.next_row()
       drivingDistance = 0
       if(sensingDistance > 150 or drivingDistance > 200):
-          drivetrain.drive_for(FORWARD, 200)
+          drivetrain.drive_for(FORWARD, 20)
           midpointDetectAndDrive()
           drivingDistance += 200
       else:
