@@ -55,33 +55,33 @@ def midpointDetectAndDrive():
 
     
     # Scan for the two positions
-    while (drivetrain.turn_for(RIGHT, 90)):
-        pointA = range_finder_a.distance(MM)
-        angleA = drivetrain.heading(DEGREES)
-        if (pointA >= distanceThreshold < 350): 
-            brain.screen.print("A Wall has been Detected!")
-            brain.screen.next_row() 
-            break
-        else: 
-            brain.screen.print("No wall detected!")
-            brain.screen.next_row()
+
+    drivetrain.turn_for(RIGHT, 45)
+    pointA = range_finder_a.distance(MM)
+    angleA = drivetrain.heading(DEGREES)
+    if (pointA >= distanceThreshold < 350): 
+        brain.screen.print("A Wall has been Detected!")
+        brain.screen.next_row() 
+        
+    else: 
+        brain.screen.print("No wall detected!")
+        brain.screen.next_row()
     drivetrain.turn_to_heading(initialHeading)
-    while (drivetrain.turn_for(LEFT, 90)):
-        pointB = range_finder_a.distance(MM)
-        angleB = drivetrain.heading(DEGREES)
-        if (pointB >= distanceThreshold < 350): 
-            brain.screen.print("A Wall has been Detected!")
-            brain.screen.next_row() 
-            break
-        else: 
-            brain.screen.print("No wall detected!")
-            brain.screen.next_row()
+    drivetrain.turn_for(LEFT, 45)
+    pointB = range_finder_a.distance(MM)
+    angleB = drivetrain.heading(DEGREES)
+    if (pointB >= distanceThreshold < 350): 
+        brain.screen.print("A Wall has been Detected!")
+        brain.screen.next_row() 
+    else: 
+        brain.screen.print("No wall detected!")
+        brain.screen.next_row()
     
     # Calculate the coodinates from the scanned points
-    pointAx = ((((pointA) * math.cos(angleA)) + 0)/ 180.0 * math.pi)
-    pointAy = ((((pointA) * math.sin(angleA)) + 0)/ 180.0 * math.pi)
-    pointBx = ((((pointB) * math.cos(angleB)) + 0)/ 180.0 * math.pi)
-    pointBy = ((((pointB) * math.sin(angleB)) + 0)/ 180.0 * math.pi)
+    pointAx = ((pointA) * math.cos(angleA)) 
+    pointAy = ((pointA) * math.sin(angleA))
+    pointBx = ((pointB) * math.cos(angleB))
+    pointBy = ((pointB) * math.sin(angleB))
     midPointX = ((pointAx-pointBx)/2)+pointBx
     midPointY = ((pointAy-pointBy)/2)+pointBy
 
@@ -90,6 +90,7 @@ def midpointDetectAndDrive():
     drivetrain.drive_for(FORWARD, midPointX)
     drivetrain.turn_to_heading (initialHeading)
     drivetrain.drive_for(FORWARD, midPointY)
+
 
 
 def when_started1():
@@ -103,9 +104,7 @@ def when_started1():
       brain.screen.next_row()
       drivingDistance = 0
       if(sensingDistance > 150 or drivingDistance > 200):
-          drivetrain.drive_for(FORWARD, 20)
           midpointDetectAndDrive()
-          drivingDistance += 200
       else:
           drivetrain.stop()
           # Append driving distance to the totalTravel array
